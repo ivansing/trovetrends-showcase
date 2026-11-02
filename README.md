@@ -2,15 +2,16 @@
   <img src="docs/logo/trovetrends-logo-color.svg" alt="TroveTrends" width="280" />
 </p>
 
-<h1 align="center">TroveTrends — Content Platform with Email Marketing & Admin Dashboard</h1>
+<h1 align="center">TroveTrends: Content Platform with Email Marketing & Admin Dashboard</h1>
 
 [![Live](https://img.shields.io/badge/live-trovetrends.com-success.svg)](https://trovetrends.com)
-[![Version](https://img.shields.io/badge/version-1.0.0-blue.svg)](#)
+[![Frontend](https://img.shields.io/badge/frontend-1.0.0-blue.svg)](#)
+[![Admin](https://img.shields.io/badge/admin-1.4.0-blue.svg)](#)
 [![Next.js](https://img.shields.io/badge/Next.js-14-black?logo=next.js&logoColor=white)](https://nextjs.org/)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Tailwind](https://img.shields.io/badge/Tailwind-3-38BDF8?logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
 [![Firebase](https://img.shields.io/badge/Firebase-Firestore-FFCA28?logo=firebase&logoColor=black)](https://firebase.google.com/)
-[![SendGrid](https://img.shields.io/badge/SendGrid-Email-1A82E2?logo=sendgrid&logoColor=white)](https://sendgrid.com/)
+[![Resend](https://img.shields.io/badge/Resend-Email-000000?logo=resend&logoColor=white)](https://resend.com/)
 [![License](https://img.shields.io/badge/license-Proprietary-red.svg)](LICENSE)
 
 ---
@@ -23,8 +24,8 @@
 
 It ships as **two applications** working in concert:
 
-1. **TroveTrends Frontend** — the public-facing content site at [trovetrends.com](https://trovetrends.com). Next.js 13.5+ with App Router, SSR/ISR for SEO, Firebase Firestore for data, SendGrid for transactional email, full-text search, trending articles, and lead-capture flows.
-2. **TroveTrends Admin** — the internal content management dashboard. Next.js 14 with Firebase Auth and RBAC, article CRUD with a rich content-block system, email campaign management, subscriber analytics, and SEO metadata control.
+1. **TroveTrends Frontend**: the public-facing content site at [trovetrends.com](https://trovetrends.com). Next.js 13.5 with App Router, SSR/ISR for SEO, Firebase Firestore for data, Resend for transactional email, a Ctrl+K search palette, trending articles, a Free Tools hub, and lead-capture flows.
+2. **TroveTrends Admin**: the internal content management dashboard. Next.js 14 with Firebase Auth, article CRUD with a rich content-block system, email campaign management on Resend (with Svix-signed delivery webhooks), an ApexCharts analytics dashboard, and SEO metadata control. The admin app is at **v1.4.0** (its latest release in the changelog).
 
 Live, deployed, and actively maintained on Vercel.
 
@@ -32,38 +33,45 @@ Live, deployed, and actively maintained on Vercel.
 
 ### Public Content Site
 
-- **SEO-first architecture** — Server-side rendering and incremental static regeneration on every article and category page, structured data (JSON-LD) for rich snippets, dynamic sitemaps, RSS feeds
-- **Full-text search** — Article search API with relevance ranking
-- **Trending & Featured articles** — Dynamic trending content based on engagement metrics
-- **Multi-category browsing** — Technology, software, health & lifestyle, finance & investing
-- **Newsletter subscription** — Double opt-in flow with confirmation emails, SendGrid-backed
-- **Contact form** — Rate-limited, Zod-validated, Firebase-stored with notification emails
-- **Finance calculator** — Interactive finance calculator with custom React hooks
-- **Interactive quiz** — Lead-magnet quiz with result-driven content recommendations
-- **Reading tracker** — Client-side engagement tracking for personalization signals
-- **Popup lead magnets** — Delayed-trigger newsletter popups (45s engagement threshold)
-- **Maintenance mode** — Built-in middleware for scheduled site maintenance windows
-- **Secure PDF downloads** — JWT-protected PDF delivery for gated content
+- **SEO-first architecture**: Server-side rendering and incremental static regeneration on every article and category page, structured data (JSON-LD) for rich snippets, dynamic sitemaps, RSS feeds
+- **Command-palette search**: Ctrl+K / Cmd+K search dialog with article thumbnails, recent searches, and trending articles
+- **Trending & Featured articles**: Dynamic trending content based on engagement metrics
+- **Multi-category browsing**: Technology, software, health & lifestyle, finance & investing
+- **Recipes subcategory**: Health & lifestyle recipe pages with click-to-load TikTok and Pinterest embeds (no third-party player loads until the reader asks for it), creator credit, and embed-view / outbound-click analytics
+- **Free Tools hub**: `/tools`, home of the public Financial Health Calculator: spending plan, safety check, Money Psychology Score, and an action plan, linked from the finance category and articles
+- **Newsletter subscription**: Double opt-in flow with confirmation and welcome emails via Resend
+- **Contact form**: Rate-limited, validated, Firebase-stored with notification emails
+- **Interactive quiz**: Lead-magnet quiz with result-driven content recommendations
+- **Reading tracker**: Client-side engagement tracking for personalization signals
+- **Popup lead magnets**: Newsletter popups triggered by time on page, scroll depth, or exit intent
+- **Maintenance mode**: Built-in middleware for scheduled site maintenance windows
+- **Secure PDF downloads**: JWT-protected PDF delivery for gated content
+- **Error boundaries**: Fault isolation around the header, content, footer, and popups, plus a global error page
+- **Security headers**: Content-Security-Policy, HSTS, and X-Frame-Options on every response
+- **Accessibility**: WCAG AA color contrast target, focus traps, aria labels, and semantic HTML
 
 ### Admin Dashboard
 
-- **Firebase Authentication** — Email/password and Google Sign-In with custom claims for RBAC
-- **Role-Based Access Control** — Firebase custom claims gate admin vs. editor access
-- **Article Management** — Full CRUD with a block-based content editor supporting:
+- **Firebase Authentication**: Email/password and Google Sign-In
+- **Protected admin API**: Firebase ID tokens verified on admin API routes, including campaign sends
+- **Typed article model**: Articles are sequences of content blocks:
   - Headings, paragraphs, quotes, lists
   - Images with captions and alt text
   - Call-to-action buttons with affiliate tracking
   - Tables, embedded videos
-- **SEO metadata management** — Per-article meta title, description, Open Graph tags
-- **Editorial workflow** — Draft → Published → Archived status transitions
-- **Featured article designation** — Homepage hero and featured slots
-- **Email Marketing** — Complete campaign management:
+- **Articles dashboard**: Status (draft, published, archived), view counts and affiliate clicks per article. The article editor's save path is in development.
+- **SEO metadata**: Per-article meta title, description, Open Graph tags in the data model
+- **Featured article designation**: Homepage hero and featured slots
+- **Email Marketing**: Complete campaign management:
   - Email templates with brand-aligned design
   - Subscriber list management and segmentation
   - Campaign scheduling and analytics
-- **Contact & lead management** — Subscriber and lead tracking with source attribution
-- **Analytics dashboard** — Performance metrics, engagement statistics, conversion tracking
-- **View count & affiliate click tracking** — Article-level engagement and revenue metrics
+  - Guarded status transitions (draft/scheduled → sending → completed/failed) written in a transaction
+  - Archiving instead of deleting: archived campaigns keep their stats and an audit timestamp
+  - Resend delivery events (opens, clicks, bounces, complaints) received through Svix-signed webhooks
+- **Contact & lead management**: Subscriber and lead tracking with source attribution
+- **Analytics dashboard**: ApexCharts KPIs: subscriber growth, campaign opens/clicks/delivered over time, engagement segments, top articles and affiliate clicks, with weekly and monthly comparisons
+- **View count & affiliate click tracking**: Article-level engagement and revenue metrics
 
 ## Architecture
 
@@ -75,10 +83,10 @@ Live, deployed, and actively maintained on Vercel.
 
 The frontend follows a clean four-layer architecture:
 
-- **Client Layer** — React 18 components (SSR-hydrated), client-side state via React hooks, Google Analytics and Pinterest Pixel for engagement tracking
-- **Application Layer** — Next.js 13.5 App Router with Server Components (default) and Client Components (for interactive UI), API route handlers under `app/api/*`, middleware for maintenance mode and cross-cutting concerns
-- **Data Layer** — Firebase Firestore (articles, newsletter subscribers, contacts, system settings) with real-time synchronization and security rules enforced at the database level
-- **Service Layer** — SendGrid for transactional emails (confirmation, welcome, unsubscribe), analytics providers for engagement tracking
+- **Client Layer**: React 18 components (SSR-hydrated) wrapped in error boundaries, client-side state via React hooks, Google Analytics and Pinterest Pixel for engagement tracking
+- **Application Layer**: Next.js 13.5 App Router with Server Components (default) and Client Components (for interactive UI), API route handlers under `app/api/*`, middleware for maintenance mode and cross-cutting concerns
+- **Data Layer**: Firebase Firestore (articles, newsletter subscribers, contacts, system settings) with a 5-minute in-memory query cache and security rules enforced at the database level
+- **Service Layer**: Resend for transactional emails (confirmation, welcome, unsubscribe), analytics providers for engagement tracking
 
 ### Admin Dashboard
 
@@ -86,7 +94,9 @@ The frontend follows a clean four-layer architecture:
   <img src="docs/diagrams/system-architecture-admin.drawio.png" alt="TroveTrends Admin Architecture" />
 </p>
 
-The admin dashboard uses Next.js 14 with a separate Firebase project scoping, Firebase Auth with custom claims for RBAC, and the same Firestore collections as the frontend (read/write separation enforced by security rules).
+The admin dashboard uses Next.js 14 with Firebase Auth, the same Firestore collections as the frontend (read/write separation enforced by security rules), and Resend for campaign delivery. Resend posts delivery events back to a webhook route that checks the Svix signature before recording them.
+
+*The architecture diagrams and PDFs below were drawn before the move from SendGrid to Resend; the text on this page is current.*
 
 ### Rendering Strategy
 
@@ -94,7 +104,7 @@ The admin dashboard uses Next.js 14 with a separate Firebase project scoping, Fi
 | ---------------- | --------- | ------------------------------ |
 | Article pages    | SSR + ISR | SEO optimization, fast loads   |
 | Category pages   | SSR + ISR | SEO optimization               |
-| Finance calculator | CSR     | Heavy interactivity            |
+| Tools hub & calculator | SSR shell + client interactivity | Indexable page, interactive tool |
 | Interactive quiz | CSR       | Client-side state management   |
 | API routes       | Server    | Data operations                |
 
@@ -106,29 +116,28 @@ The admin dashboard uses Next.js 14 with a separate Firebase project scoping, Fi
 
 | Category           | Technology                                    |
 | ------------------ | --------------------------------------------- |
-| Framework          | Next.js 13.5+ (App Router, SSR/ISR)           |
+| Framework          | Next.js 13.5 (App Router, SSR/ISR)            |
 | Language           | TypeScript 5.2 (strict mode)                  |
 | Styling            | Tailwind CSS 3.3 + shadcn/ui (Radix primitives) |
 | Icons              | Lucide React                                  |
 | Database           | Firebase Firestore (Client SDK + Admin SDK)   |
-| Email              | SendGrid (transactional)                      |
-| Forms              | React Hook Form + Zod validation              |
+| Email              | Resend (transactional)                        |
+| Forms              | React state with server-side validation       |
 | Data Visualization | Recharts, Embla Carousel                      |
-| Testing            | Jest + ts-jest                                |
+| Testing            | Jest + ts-jest, live check scripts (bash)     |
 | Deployment         | Vercel (standalone output)                    |
 
 ### Admin Dashboard
 
 | Category           | Technology                                       |
 | ------------------ | ------------------------------------------------ |
-| Framework          | Next.js 14 (App Router)                          |
+| Framework          | Next.js 14 (App Router), React 18                |
 | Language           | TypeScript 5                                     |
 | Styling            | Tailwind CSS + shadcn/ui                         |
-| Auth               | Firebase Authentication + custom claims (RBAC)   |
+| Auth               | Firebase Authentication (ID token verification)  |
 | Database           | Firebase Firestore (Admin SDK, server-only writes) |
-| Email              | SendGrid (campaigns, templates, analytics)      |
-| Forms              | React Hook Form + Zod                            |
-| Testing            | Jest + React Testing Library                     |
+| Email              | Resend (campaigns, templates), Svix-signed webhooks |
+| Charts             | ApexCharts                                       |
 | Deployment         | Vercel                                           |
 
 ## Engineering Highlights
@@ -139,22 +148,22 @@ Every public page is either SSR or ISR so that search engine crawlers receive fu
 
 ### Rate-Limited API Routes
 
-The newsletter signup, contact form, and search endpoints are rate-limited to prevent abuse. Implementation is middleware-based so new API routes inherit rate limiting by default without per-route code.
+The newsletter signup and contact form routes use an in-memory, per-IP fixed-window rate limiter. The gated PDF download route adds its own per-IP and per-email limits and counts how often each token is used.
 
 ### Double Opt-In Newsletter Flow
 
 Newsletter subscription uses a verified double opt-in pattern:
 
 1. User submits email → server validation (format + duplicate check)
-2. Subscriber created in Firestore with `pending_confirmation` status + confirmation token
-3. Confirmation email dispatched via SendGrid with tokenized link
+2. Subscriber created in Firestore with `pending` status + confirmation token
+3. Confirmation email dispatched via Resend with tokenized link
 4. User clicks link → status updated to `confirmed`, welcome email sent
 
-This ensures only real, owned email addresses enter the subscriber base — critical for deliverability and CAN-SPAM compliance.
+This ensures only real, owned email addresses enter the subscriber base, which is critical for deliverability and CAN-SPAM compliance.
 
-### Content Block System (Admin)
+### Content Block System
 
-Articles aren't stored as raw HTML or Markdown. Instead, each article is a structured sequence of **content blocks** (heading, paragraph, image, CTA, table, list, quote, embed) with typed metadata. This lets the admin dashboard render a rich editor per block type while keeping the data schema consistent and machine-readable.
+Articles aren't stored as raw HTML or Markdown. Instead, each article is a structured sequence of **content blocks** (heading, paragraph, image, CTA, table, list, quote, embed) with typed metadata. The data schema stays consistent and machine-readable, and an editor can offer one control per block type.
 
 **Why this matters:** A future headless API, mobile app, or AI summarizer can walk the block structure without parsing HTML.
 
@@ -164,7 +173,19 @@ Gated PDF content (lead magnets, ebooks) is served through a JWT-token-based dow
 
 ### Firestore Security Rules
 
-All write access to Firestore is restricted to server-side operations (Admin SDK). The client SDK has read-only access to public collections, enforced by Firestore security rules at the database layer. Even if the client bundle is tampered with, writes are impossible from the browser.
+Firestore security rules validate every client create (required fields, types, email format, a recent timestamp, an allowed source, and length limits). They restrict client updates to a few fields, and block client deletes and collection listing. Privileged writes go through the Admin SDK on the server.
+
+### Email Campaign Lifecycle (Admin)
+
+Campaign status changes go through one service method with an allowed-transition guard, run inside a Firestore transaction: draft or scheduled → sending → completed or failed, and anything not currently sending → archived. Deleting a campaign archives it and stamps `deletedAt`, so stats and the audit trail survive. Archived, sending, and completed campaigns cannot be edited, and the send route requires a verified Firebase ID token.
+
+### Privacy-Friendly Embeds
+
+Recipe pages show a static placeholder until the reader clicks. Only then does the TikTok or Pinterest player load, so third-party scripts and trackers don't run on every page view. The Content-Security-Policy `frame-src` allows only the site itself plus the TikTok and Pinterest embed hosts.
+
+### Live Check Scripts
+
+Besides unit tests, bash live-check scripts exercise the built site the way a visitor would (canonical URLs, the Tools hub, recipe pages, the sitemap). An orchestrator runs them all against a local production build.
 
 ### Performance Optimizations
 
@@ -172,9 +193,10 @@ All write access to Firestore is restricted to server-side operations (Admin SDK
 - **`next/image`** with automatic format negotiation and responsive sizing
 - **Standalone output** for containerized deployments
 - **Server Components by default** to reduce client-side JavaScript
-- **Dynamic imports** for heavy components (calculator, quiz, Recharts)
+- **Dynamic imports** for heavy components (calculator, quiz, charts)
 - **Static generation** where content is stable
-- **Firestore real-time listeners** with local caching for dynamic data
+- **5-minute in-memory cache** for Firestore queries, alongside ISR for pages
+- **Click-to-load embeds** so third-party players load only on demand
 
 ## By the Numbers
 
@@ -183,17 +205,21 @@ All write access to Firestore is restricted to server-side operations (Admin SDK
 | Apps                      | 2 (Public site + Admin dashboard)                  |
 | API Route Handlers        | 12+ (frontend) + full admin API                    |
 | Firestore Collections     | `articles`, `newsletter_subscribers`, `contacts`, `systemSettings`, `subscribers_campaigns` |
-| Email Templates           | Confirmation, Welcome, Unsubscribe, Campaign templates |
+| Email Templates           | Confirmation, Welcome, Unsubscribe, Campaign templates (Resend) |
+| Free Tools                | Financial Health Calculator                        |
 | Article Block Types       | 8+ (heading, paragraph, image, CTA, table, list, quote, embed) |
-| RBAC                      | Firebase custom claims (admin, editor roles)       |
+| Admin Auth                | Firebase Auth, ID tokens verified on admin API routes |
+| Versions                  | Frontend 1.0.0 · Admin 1.4.0                       |
 | Deployment                | Vercel (production + preview environments)         |
 
 ## Documentation
 
 Full architecture documentation is included as downloadable PDFs:
 
-- [**TroveTrends Frontend Architecture**](docs/TroveTrends_Frontend_Architecture.pdf) — 9-page deep-dive covering technology stack, system architecture, directory structure, data flow, state management, rendering strategy, external integrations, and performance
-- [**TroveTrends Admin Architecture**](docs/TroveTrends_Admin_Architecture.pdf) — Admin dashboard architecture, authentication flow, article management design, database schema, deployment guide
+- [**TroveTrends Frontend Architecture**](docs/TroveTrends_Frontend_Architecture.pdf): 9-page deep-dive covering technology stack, system architecture, directory structure, data flow, state management, rendering strategy, external integrations, and performance
+- [**TroveTrends Admin Architecture**](docs/TroveTrends_Admin_Architecture.pdf): Admin dashboard architecture, authentication flow, article management design, database schema, deployment guide
+
+*The PDFs predate the Resend migration and still mention SendGrid.*
 
 The internal documentation library also includes:
 
@@ -210,21 +236,20 @@ The internal documentation library also includes:
 ### Authentication (Admin)
 
 - Firebase Authentication (email/password + Google OAuth)
-- Firebase custom claims for role-based access
-- JWT verification on every admin API endpoint
+- Firebase ID token verification on admin API endpoints
 - Secure session management
 
 ### Data Protection
 
-- **Firestore security rules** restrict all writes to server-side operations
-- Client SDK is read-only for public collections
-- Admin SDK runs exclusively on Next.js API routes
+- **Firestore security rules** validate every client create, restrict client updates to a few fields, and block client deletes
+- Privileged writes go through the Admin SDK, which runs only in Next.js API routes
+- Resend webhooks verified by Svix signature before any event is stored
 - Environment variables for all API keys (never in client bundles)
 
 ### API Hardening
 
-- Rate limiting on public endpoints (newsletter, contact, search)
-- Zod schema validation on every request body
+- In-memory per-IP rate limiting on the newsletter and contact routes; per-IP and per-email hourly limits on PDF downloads, counted in Firestore
+- Content-Security-Policy, HSTS, and X-Frame-Options security headers
 - Input validation at client, API, and database layers
 - CAN-SPAM compliant unsubscribe flow
 - HTTPS-only production traffic via Vercel
@@ -235,14 +260,16 @@ The internal documentation library also includes:
 | --------------------- | -------------------------------------------------------------------------- |
 | Full-Stack Next.js    | App Router, SSR/ISR, Server Components, middleware, API routes             |
 | SEO Engineering       | Structured data, sitemaps, RSS, meta tags, SSR-first architecture         |
-| Firebase              | Firestore (Client + Admin SDK), Auth with custom claims, security rules   |
-| Email Infrastructure  | SendGrid transactional, campaign management, double opt-in, unsubscribe   |
-| RBAC                  | Firebase custom claims, JWT verification, role-based UI gating            |
-| Form Handling         | React Hook Form + Zod, rate-limited submission, server validation         |
-| Content Architecture  | Block-based editor, typed schemas, headless-API-ready data model          |
+| Firebase              | Firestore (Client + Admin SDK), Auth with ID token verification, security rules |
+| Email Infrastructure  | Resend transactional + campaigns, Svix-signed webhooks, double opt-in, unsubscribe |
+| Auth & Security       | Firebase ID token verification, CSP/HSTS headers, Firestore rules          |
+| Form Handling         | Rate-limited submission, server validation                                |
+| Content Architecture  | Block-based content model, typed schemas, headless-API-ready data         |
 | Performance           | SSR + ISR, dynamic imports, image optimization, SWC, caching strategy     |
 | DevOps                | Vercel deployment, standalone output, environment management              |
-| Testing               | Jest, ts-jest, component testing                                          |
+| Testing               | Jest, ts-jest, component testing, live check scripts                      |
+| Accessibility         | WCAG AA contrast target, focus traps, aria labels, semantic HTML           |
+| Data Visualization    | ApexCharts analytics dashboard                                            |
 | Documentation         | Architecture PDFs, API references, component docs, security model         |
 
 ## About ByteUp
@@ -254,9 +281,9 @@ TroveTrends is a product of **[ByteUp LLC](https://byteup.co)**, a software stud
 | Product                   | Status             | Link                                                                                        |
 | ------------------------- | ------------------ | ------------------------------------------------------------------------------------------- |
 | **TroveTrends**           | Live               | You are here · [trovetrends.com](https://trovetrends.com)                                   |
-| **FixDoc**                | Active development | [fixdoc-showcase](https://github.com/ivansing/fixdoc-showcase) — Multi-tenant doc verification SaaS |
-| **Migratex**              | Production-ready   | [migratex-showcase](https://github.com/ivansing/migratex-showcase) — Excel → PostgreSQL ETL CLI |
-| **Stripe Payment Links**  | Production-ready   | [stripe-payment-links-showcase](https://github.com/ivansing/stripe-payment-links-showcase) — FastAPI payment API |
+| **FixDoc**                | Private beta       | [fixdoc-showcase](https://github.com/ivansing/fixdoc-showcase): Document checks for mortgage loan files |
+| **Migratex**              | Production-ready   | [migratex-showcase](https://github.com/ivansing/migratex-showcase): Excel → PostgreSQL ETL CLI |
+| **Stripe Payment Links**  | Production-ready   | [stripe-payment-links-showcase](https://github.com/ivansing/stripe-payment-links-showcase): FastAPI payment API |
 
 ### Author
 
@@ -276,4 +303,4 @@ This repository contains documentation and marketing materials only. The content
 
 ---
 
-*Document Version: 1.0 · Product: TroveTrends · Status: Live at [trovetrends.com](https://trovetrends.com)*
+*Document Version: 1.1 · Product: TroveTrends · Status: Live at [trovetrends.com](https://trovetrends.com)*
